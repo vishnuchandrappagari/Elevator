@@ -6,81 +6,45 @@ using System.Text;
 namespace ElevatorSolution
 {
     public class Floor
-    {       
-        public Floor()
-        {
-        
-        }
-
-      
+    {
 
         public ElevatorCallback _upRequestNotification;
         public ElevatorCallback _downRequestNotification;
 
-        public bool _hasUpRequest { get; set; }
+        public bool HasUpRequest { get; private set; }
 
-        public bool _hasDownRequest { get; set; }
+        public bool HasDownRequest { get; private set; }
 
-        public int FloorNumber { get; set; }
-
-
-        //public void PassThrough(Elevator elevator)
-        //{
-        //    if (_hasDownRequest && elevator.Status == ElevatorStatus.GoingDown)
-        //    {
-        //        elevator.Stop();
-        //        _downRequestNotification(elevator);
-        //        ResetMovingDownRequest();
-        //    }
-        //    else if (_hasUpRequest && elevator.Status == ElevatorStatus.GoingUp)
-        //    {
-        //        elevator.Stop();
-        //        _upRequestNotification(elevator);
-        //        ResetMovingUpRequest();
-        //    }
-        //    else if (_hasUpRequest && elevator.Status == ElevatorStatus.Stopped)
-        //    {
-        //        _upRequestNotification(elevator);
-        //        ResetMovingUpRequest();
-        //    }
-        //    else if (_hasDownRequest && elevator.Status == ElevatorStatus.Stopped)
-        //    {
-        //        _downRequestNotification(elevator);
-        //        ResetMovingDownRequest();
-        //    }
-        //}
-
-        //public void AssignElevator()
-        //{
-        //    var assignedElevator= _elevators.Where(elevator => elevator.CurrentPosition == this.FloorNumber).FirstOrDefault();
-        //    PassThrough(assignedElevator);
-
-        //    //_elevators.Where(elevator=> elevator.Status==ElevatorStatus.Stopped).OrderBy()
+        public int FloorNumber { get; private set; }
 
 
-        //}
+        public Floor(int floorNumber)
+        {
+            FloorNumber = floorNumber;
+        }
+      
 
         public void SetMovingUpRequest(ElevatorCallback callback)
         {
-            _hasUpRequest = true;
+            HasUpRequest = true;
             _upRequestNotification += callback;
         }
 
-        private void ResetMovingUpRequest()
+        public void ResetMovingUpRequest()
         {
-            _hasUpRequest = false;
+            HasUpRequest = false;
             _upRequestNotification = null;
         }
 
         public void SetMovingDownRequest(ElevatorCallback callback)
         {
-            _hasDownRequest = true;
+            HasDownRequest = true;
             _downRequestNotification += callback;
         }
 
         private void ResetMovingDownRequest()
         {
-            _hasDownRequest = false;
+            HasDownRequest = false;
             _downRequestNotification = null;
         }
     }

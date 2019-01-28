@@ -12,28 +12,29 @@ namespace ElevatorSolution.Tests
         {
             //Arrange
             Building building = new Building(minFloor: 0, maxfloor: 1, numberOfElevators: 1);
-            AutoResetEvent autoResetEvent = new AutoResetEvent(false);
+            AutoResetEvent elevatorActionCompletedSignal = new AutoResetEvent(false);
 
             //Act            
             building.AddFloorRequest(floorNumber: 0, requestDirection: FloorRequest.UP, elevatorArrivedAtFloorcallback: (elevator) =>
-             {
-                 elevator.AddRequest(destinationFloorNumber: 1, doorsOpenedCallBack: (elevatorDoorsOpened) => {
-                     Thread.Sleep(10);
-                     elevatorDoorsOpened.CloosDoors();
-                 }, servedRequestCallback: (elevatorServedRequest) =>
+             {            
+                 elevator.AddRequest(destinationFloor: 1, servedRequestCallback: (elevatorServedRequest) =>
                    {
-                     var actions = elevatorServedRequest.GetActions();
+                       var actions = elevatorServedRequest.GetActions();
 
-                    //Assert
-                    Assert.True(actions.Count() == 1);
-                     Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions.First());
+                       //Assert
+                       Assert.True(actions.Count() == 1);
+                       Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions.First());
 
-                     autoResetEvent.Set();
-                 });
+                       elevatorActionCompletedSignal.Set();
+                   });
+
+                 //Closing the door after 10ms
+                 Thread.Sleep(100);
+                 elevator.CloosDoors();
              });
 
-            //Waiting for elevator to move to desired floor
-            autoResetEvent.WaitOne();
+            //Waiting for elevator to complete the request
+            elevatorActionCompletedSignal.WaitOne();
         }
 
         [Fact]

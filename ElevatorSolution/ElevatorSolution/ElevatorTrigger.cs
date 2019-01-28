@@ -9,9 +9,7 @@ namespace ElevatorSolution
         OpenDoors,
         CloseDoors,
         MoveUp,
-        MoveDown,
-        PickUp,
-        CloosDoors,
+        MoveDown,                
         Stop
     }
 }

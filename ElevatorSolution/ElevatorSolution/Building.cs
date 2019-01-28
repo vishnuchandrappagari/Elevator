@@ -18,26 +18,14 @@ namespace ElevatorSolution
 
             _floors = new SortedList<int, Floor>();
 
-            for (int i = minFloor; i < maxfloor; i++)
-                _floors.Add(i, new Floor());
+            for (int i = minFloor; i <= maxfloor; i++)
+                _floors.Add(i, new Floor(i));
 
             for (int i = 0; i < numberOfElevators; i++)
                 _elevators.Add(new Elevator(_floors));
 
 
         }
-
-
-        //public void MoveUpRequest(int floor,int destinationFloor)
-        //{
-        //    Floor groundFloor = GetFloor(0);
-        //    groundFloor.SetMovingUpRequest((elevator) => {
-
-        //        elevator.AddRequest(floor: 1);
-        //        var actions = elevator.GetActions();
-
-        //    });
-        //}
 
 
         public void AddFloorRequest(int floorNumber, FloorRequest requestDirection, ElevatorCallback elevatorArrivedAtFloorcallback)
@@ -47,7 +35,7 @@ namespace ElevatorSolution
 
             Elevator elevatorInRequestFloor = _elevators.FirstOrDefault();
 
-            elevatorArrivedAtFloorcallback(elevatorInRequestFloor);
+            elevatorInRequestFloor.AddRequest(floorNumber, elevatorArrivedAtFloorcallback);
         }
     }
 }

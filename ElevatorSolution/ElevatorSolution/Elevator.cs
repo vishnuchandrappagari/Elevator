@@ -11,19 +11,52 @@ namespace ElevatorSolution
 {
     public class Elevator
     {
-        private AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
-        private StateMachine<ElevatorState, ElevatorTrigger> _state = new StateMachine<ElevatorState, ElevatorTrigger>(ElevatorState.Stopped);
-        private SortedList<int, ElevatorCallback> _stops = new SortedList<int, ElevatorCallback>();
+        private AutoResetEvent _doorCloseSignaling = new AutoResetEvent(false);
+        private AutoResetEvent _newRequestSignaling = new AutoResetEvent(false);
+
+        private StateMachine<ElevatorState, ElevatorTrigger> _stateMachine;
+        private Queue<ElevatorRequest> _requestQueue = new Queue<ElevatorRequest>();
         private IList<ElevatorAction> actions = new List<ElevatorAction>();
         private SortedList<int, Floor> _floors;
         private int _currentFloor;
-        private ElevatorCallback _doorOpenedCallback;
+
 
         public string Name { get; set; }
 
         public Elevator(SortedList<int, Floor> floors)
         {
-            _state = ConfigureStateMachine();
+            _stateMachine = new StateMachine<ElevatorState, ElevatorTrigger>(ElevatorState.Stopped, FiringMode.Immediate);
+
+            _stateMachine.Configure(ElevatorState.Stopped)
+                .Permit(ElevatorTrigger.OpenDoors, ElevatorState.DoorOpened)
+                .OnExit(() =>
+                {
+                    ElevatorRequest elevatorRequest = _requestQueue.FirstOrDefault(request => request.DestinationFloor == _floors[_currentFloor].FloorNumber);
+
+                    if (elevatorRequest != null)
+                    {
+                        _requestQueue.Remove(elevatorRequest);
+                        Task.Factory.StartNew((callback) => ((ElevatorCallback)(callback))(this), elevatorRequest.ElevatorCallback);
+                    }
+                }
+                );
+
+
+            _stateMachine.Configure(ElevatorState.DoorOpened)
+                .Permit(ElevatorTrigger.CloseDoors, ElevatorState.Stopped);
+
+            _stateMachine.Configure(ElevatorState.Stopped)
+                .Permit(ElevatorTrigger.MoveUp, ElevatorState.GoingUp)
+                .Permit(ElevatorTrigger.MoveDown, ElevatorState.GoingDown);
+
+            _stateMachine.Configure(ElevatorState.GoingUp)
+                .Permit(ElevatorTrigger.Stop, ElevatorState.Stopped);
+
+
+            _stateMachine.Configure(ElevatorState.GoingDown)
+                    .Permit(ElevatorTrigger.Stop, ElevatorState.Stopped);
+
+            //Placing new elevator on lowest floor
             _currentFloor = floors.First().Key;
 
             _floors = floors;
@@ -33,116 +66,76 @@ namespace ElevatorSolution
             Thread.Start();
         }
 
-        private StateMachine<ElevatorState, ElevatorTrigger> ConfigureStateMachine()
-        {
-            _state.Configure(ElevatorState.Stopped)
-                .PermitIf(ElevatorTrigger.OpenDoors, ElevatorState.DoorOpened)
-                .OnEntry(() =>
-                {
-                    Task.Factory.StartNew(() => _doorOpenedCallback(this));
-
-                    //Waiting for doors to close
-                    _autoResetEvent.WaitOne();
-                });
-
-            _state.Configure(ElevatorState.DoorOpened)
-                .PermitIf(ElevatorTrigger.CloosDoors, ElevatorState.Stopped);
-
-
-            _state.Configure(ElevatorState.Stopped)
-                .PermitIf(ElevatorTrigger.MoveUp, ElevatorState.GoingUp)
-                .PermitIf(ElevatorTrigger.MoveDown, ElevatorState.GoingDown);
-
-            _state.Configure(ElevatorState.GoingUp)
-                .PermitIf(ElevatorTrigger.PickUp, ElevatorState.GoingUpDoorOpenedForPickUp)
-                .PermitIf(ElevatorTrigger.Stop, ElevatorState.Stopped);
-
-            _state.Configure(ElevatorState.GoingDown)
-                .PermitIf(ElevatorTrigger.PickUp, ElevatorState.GoingDownDoorOpenedForPickUp)
-                .PermitIf(ElevatorTrigger.Stop, ElevatorState.Stopped);
-
-            _state.Configure(ElevatorState.GoingUpDoorOpenedForPickUp)
-                .PermitIf(ElevatorTrigger.CloosDoors, ElevatorState.GoingUp)
-                .OnExit(() => _autoResetEvent.Set());
-
-            _state.Configure(ElevatorState.GoingDownDoorOpenedForPickUp)
-                .PermitIf(ElevatorTrigger.CloosDoors, ElevatorState.GoingDown)
-                .OnExit(() => _autoResetEvent.Set());
-
-            return _state;
-        }
 
 
 
 
         public void ProcessRequests()
         {
-            //int nextFloor;
-
-            //if (_state.State==State.GoingUp)
-            //{
-            //     nextFloor = _currentFloor++;
-            //    AddAction(_currentFloor, nextFloor);
-            //    _currentFloor = nextFloor;
-            //}
-
-            //Initial wait 
-            _autoResetEvent.WaitOne();
-
-            Floor currentFloor = _floors[_currentFloor];
-
-            if (_state.State == ElevatorState.Stopped)
+            while (true)
             {
-                if (currentFloor._hasUpRequest)
+
+                if (_requestQueue.Count == 0)
+                    _newRequestSignaling.WaitOne();
+
+                Floor currentFloor = _floors[_currentFloor];
+
+                if (_stateMachine.State == ElevatorState.Stopped)
                 {
-                    currentFloor._upRequestNotification(this);
+                    if (currentFloor.HasUpRequest)
+                    {
+                        _stateMachine.Fire(ElevatorTrigger.OpenDoors);
+                        //Waiting for doors to close
+                        _doorCloseSignaling.WaitOne();
 
-                    _state.Fire(ElevatorTrigger.OpenDoors);
+                        currentFloor.ResetMovingUpRequest();
 
-                    MoveUp();
+                        _stateMachine.Fire(ElevatorTrigger.MoveUp);
 
+                        AddAction(_currentFloor, _currentFloor + 1);
+                        _currentFloor++;
+                    }
+                    else if (currentFloor.HasDownRequest)
+                    {
+                        currentFloor._downRequestNotification(this);
+                    }
+                    else
+                    {
+                        //Determine the direction based on request 
+                        ElevatorRequest elevatorRequest = _requestQueue.Peek();
+                        if (elevatorRequest.DestinationFloor > currentFloor.FloorNumber)
+                        {
+                            _stateMachine.Fire(ElevatorTrigger.MoveUp);
+                        }
+                    }
                 }
-                else if (currentFloor._hasDownRequest)
-                    currentFloor._downRequestNotification(this);
+                else if (_stateMachine.State == ElevatorState.GoingUp)
+                {
+                    if (_requestQueue.Any(request => request.DestinationFloor == _currentFloor))
+                    {
+                        _stateMachine.Fire(ElevatorTrigger.Stop);
+
+                        _stateMachine.Fire(ElevatorTrigger.OpenDoors);
+
+                        //Waiting for doors to close
+                        _doorCloseSignaling.WaitOne();
+                    }
+                }
 
             }
         }
 
 
-        public void MoveUp()
+        public void AddRequest(int destinationFloor, ElevatorCallback servedRequestCallback)
         {
-            AddAction(_currentFloor, _currentFloor + 1);
-            _currentFloor++;
-
-            //If any drop request in new floor
-            if (_stops.ContainsKey(_currentFloor))
-            {
-                _stops[_currentFloor](this);
-
-            }
-        }
-
-        private bool hasRequests => _stops.Count() > 1;
-
-        public void AddRequest(int destinationFloorNumber, ElevatorCallback doorsOpenedCallBack, ElevatorCallback servedRequestCallback)
-        {
-            _doorOpenedCallback += doorsOpenedCallBack;
-            if (!_stops.ContainsKey(destinationFloorNumber))
-                _stops.Add(destinationFloorNumber, servedRequestCallback);
-            //else
-            //    _stops[destinationFloorNumber] += callback;
-
-            _autoResetEvent.Set();
+            _requestQueue.Enqueue(new ElevatorRequest(destinationFloor, servedRequestCallback));
+            _newRequestSignaling.Set();
         }
 
         public void CloosDoors()
         {
-            _state.Fire(ElevatorTrigger.CloosDoors);
-        }
-
-        public void NotifyNewRequest()
-        {
-            _autoResetEvent.Set();
+            _stateMachine.Fire(ElevatorTrigger.CloseDoors);
+            _doorCloseSignaling.Set();
         }
 
         public IEnumerable<ElevatorAction> GetActions()
