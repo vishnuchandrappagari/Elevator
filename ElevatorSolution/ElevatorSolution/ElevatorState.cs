@@ -9,8 +9,6 @@ namespace ElevatorSolution
         DoorOpened,
         Stopped,                
         GoingUp,
-        GoingDown,
-        GoingUpDoorOpenedForPickUp,
-        GoingDownDoorOpenedForPickUp
+        GoingDown,    
     }
 }

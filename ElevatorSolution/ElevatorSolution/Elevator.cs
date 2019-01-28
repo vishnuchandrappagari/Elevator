@@ -20,7 +20,9 @@ namespace ElevatorSolution
         private int _currentFloor;
 
 
-        public string Name { get; set; }
+        public ElevatorState State { get {
+                return _stateMachine.State;
+            } }
 
         public Elevator(SortedList<int, Floor> floors)
         {
@@ -78,7 +80,6 @@ namespace ElevatorSolution
         {
             while (true)
             {
-
                 if (_requestQueue.Count == 0)
                     _newRequestSignaling.WaitOne();
 
@@ -108,6 +109,10 @@ namespace ElevatorSolution
                         {
                             _stateMachine.Fire(ElevatorTrigger.GoUp);
                         }
+                        else if (elevatorRequest.DestinationFloor < currentFloor.FloorNumber)
+                        {
+                            _stateMachine.Fire(ElevatorTrigger.GoDown);
+                        }
                     }
                 }
                 else if (_stateMachine.State == ElevatorState.GoingUp)
@@ -117,6 +122,11 @@ namespace ElevatorSolution
                         _stateMachine.Fire(ElevatorTrigger.Stop);
                         _stateMachine.Fire(ElevatorTrigger.OpenDoors);
                     }
+                    else
+                    {
+                        MoveUp();
+                    }
+
                 }
 
             }
@@ -136,9 +146,9 @@ namespace ElevatorSolution
             _doorCloseSignaling.Set();
         }
 
-        public IEnumerable<ElevatorAction> GetActions()
+        public ElevatorAction[] GetActions()
         {
-            return actions;
+            return actions.ToArray();
         }
 
 
