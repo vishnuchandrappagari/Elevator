@@ -8,8 +8,8 @@ namespace ElevatorSolution
     {
         OpenDoors,
         CloseDoors,
-        MoveUp,
-        MoveDown,                
+        GoUp,
+        GoDown,                
         Stop
     }
 }
