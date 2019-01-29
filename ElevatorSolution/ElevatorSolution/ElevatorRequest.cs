@@ -8,12 +8,13 @@ namespace ElevatorSolution
     {
         public int DestinationFloor { get; private set; }
 
-        public ElevatorCallback ElevatorCallback { get; private set; }
+        public ElevatorCallback DoorsOpenedAtDestinationFloor { get; private set; }
+        public ElevatorCallback DoorOpened { get; private set; }
 
-        public ElevatorRequest(int destinationFloor, ElevatorCallback elevatorCallback)
-        {
+        public ElevatorRequest(int destinationFloor, ElevatorCallback requestServed)
+        {            
             this.DestinationFloor = destinationFloor;
-            this.ElevatorCallback = elevatorCallback;
+            this.DoorsOpenedAtDestinationFloor = requestServed;
         }
     }
 

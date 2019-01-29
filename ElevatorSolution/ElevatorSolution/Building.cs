@@ -22,20 +22,20 @@ namespace ElevatorSolution
                 _floors.Add(i, new Floor(i));
 
             for (int i = 0; i < numberOfElevators; i++)
-                _elevators.Add(new Elevator(_floors));
+                _elevators.Add(new Elevator(_floors,$"Elevator {i}"));
 
 
         }
 
 
-        public void AddFloorRequest(int floorNumber, FloorRequest requestDirection, ElevatorCallback elevatorArrivedAtFloorcallback)
+        public void AddFloorRequest(int floorNumber, FloorRequest requestDirection, ElevatorCallback floorRequestAssignedElevator)
         {
             if (requestDirection == FloorRequest.UP)
-                _floors[floorNumber].SetMovingUpRequest(elevatorArrivedAtFloorcallback);
+                _floors[floorNumber].SetMovingUpRequest(floorRequestAssignedElevator);
 
             Elevator elevatorInRequestFloor = _elevators.FirstOrDefault();
 
-            elevatorInRequestFloor.AddRequest(floorNumber, elevatorArrivedAtFloorcallback);
+            elevatorInRequestFloor.AddRequest(floorNumber, floorRequestAssignedElevator);
         }
     }
 }

@@ -10,6 +10,7 @@ namespace ElevatorSolution
         CloseDoors,
         GoUp,
         GoDown,                
-        Stop
+        Stop,
+        ReverseDirection,
     }
 }
