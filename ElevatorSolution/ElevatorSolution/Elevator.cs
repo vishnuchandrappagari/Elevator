@@ -123,7 +123,10 @@ namespace ElevatorSolution
                     }
                     else if (currentFloor.HasDownRequest)
                     {
-                        currentFloor._downRequestNotification(this);
+                        _stateMachine.Fire(ElevatorTrigger.OpenDoors);
+                        currentFloor.ResetMovingDownRequest();
+                        _stateMachine.Fire(ElevatorTrigger.GoDown);
+                        MoveToNextFloor();
                     }
                     else
                     {
@@ -150,9 +153,7 @@ namespace ElevatorSolution
                     {
                         MoveToNextFloor();
                     }
-
                 }
-
             }
         }
 

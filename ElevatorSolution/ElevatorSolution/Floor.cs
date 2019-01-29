@@ -42,7 +42,7 @@ namespace ElevatorSolution
             _downRequestNotification += callback;
         }
 
-        private void ResetMovingDownRequest()
+        public void ResetMovingDownRequest()
         {
             HasDownRequest = false;
             _downRequestNotification = null;

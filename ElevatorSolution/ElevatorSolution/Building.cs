@@ -21,8 +21,8 @@ namespace ElevatorSolution
             for (int i = minFloor; i <= maxfloor; i++)
                 _floors.Add(i, new Floor(i));
 
-            for (int i = 0; i < numberOfElevators; i++)
-                _elevators.Add(new Elevator(_floors,$"Elevator {i}"));
+            for (int i = 1; i <= numberOfElevators; i++)
+                _elevators.Add(new Elevator(_floors, $"Elevator {i}"));
 
 
         }
@@ -32,6 +32,8 @@ namespace ElevatorSolution
         {
             if (requestDirection == FloorRequest.UP)
                 _floors[floorNumber].SetMovingUpRequest(floorRequestAssignedElevator);
+            else
+                _floors[floorNumber].SetMovingDownRequest(floorRequestAssignedElevator);
 
             Elevator elevatorInRequestFloor = _elevators.FirstOrDefault();
 
