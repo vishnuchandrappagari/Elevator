@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
 using static ElevatorSolution.Floor;
 
 namespace ElevatorSolution
@@ -27,17 +29,57 @@ namespace ElevatorSolution
 
         }
 
-
-        public void AddFloorRequest(int floorNumber, FloorRequest requestDirection, ElevatorCallback floorRequestAssignedElevator)
+        public Elevator AddRequest(int floorNumber, FloorRequestDirection requestDirection, int destinationFloor)
         {
-            if (requestDirection == FloorRequest.UP)
-                _floors[floorNumber].SetMovingUpRequest(floorRequestAssignedElevator);
+            return AddRequest(floorNumber, requestDirection, destinationFloor, elvatorArrivedAtFloorCallback:(elevator) => elevator.CloosDoors(), servedRequestCallback:(elevator) => elevator.CloosDoors());
+        }
+
+
+
+        public Elevator AddRequest(int floorNumber, FloorRequestDirection requestDirection, int destinationFloor, ElevatorCallback elvatorArrivedAtFloorCallback, ElevatorCallback servedRequestCallback)
+        {
+            Elevator elevatorServedRequest = null;
+            AutoResetEvent waitforCompletionSignal = new AutoResetEvent(false);
+
+            AddFloorRequest(floorNumber, requestDirection,
+                elevatorArrivedAtRequestFloor: (elevatorArrivedAtFloor) =>
+                {
+                    elevatorArrivedAtFloor.AddRequest(destinationFloor: destinationFloor,
+                        servedRequestCallback: (elevator) =>
+                        {
+                            elevatorServedRequest = elevator;
+                            Debug.WriteLine("Closing door after serving request");
+                            servedRequestCallback(elevator);
+                            waitforCompletionSignal.Set();
+                        });
+
+                    Debug.WriteLine("Closing door at arrived floor");
+
+                    elvatorArrivedAtFloorCallback(elevatorArrivedAtFloor);
+                });
+
+
+            waitforCompletionSignal.WaitOne();
+            return elevatorServedRequest;
+        }
+
+
+        public void AddFloorRequest(int floorNumber, FloorRequestDirection requestDirection, ElevatorCallback elevatorArrivedAtRequestFloor)
+        {
+            if (requestDirection == FloorRequestDirection.UP)
+                _floors[floorNumber].SetMovingUpRequest(elevatorArrivedAtRequestFloor);
             else
-                _floors[floorNumber].SetMovingDownRequest(floorRequestAssignedElevator);
+                _floors[floorNumber].SetMovingDownRequest(elevatorArrivedAtRequestFloor);
 
             Elevator elevatorInRequestFloor = _elevators.FirstOrDefault();
 
-            elevatorInRequestFloor.AddRequest(floorNumber, floorRequestAssignedElevator);
+            elevatorInRequestFloor.AddRequest(floorNumber, elevatorArrivedAtRequestFloor);
+        }
+
+
+        private Elevator PickSutableElevator(int floorNumber, FloorRequestDirection floorRequest, SortedList<int, Elevator> elevatorsList)
+        {
+            return null;
         }
     }
 }

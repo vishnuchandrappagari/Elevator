@@ -4,7 +4,7 @@ using System.Text;
 
 namespace ElevatorSolution
 {
-    public enum FloorRequest
+    public enum FloorRequestDirection
     {
         UP,
         Down
