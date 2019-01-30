@@ -21,7 +21,7 @@ namespace ElevatorSolution
         private IList<ElevatorAction> actions = new List<ElevatorAction>();
         private SortedList<int, Floor> _floors;
         private int _currentFloor;
-        private string _name;
+        public string Name{ get; set; };
 
         public ElevatorState State
         {
@@ -34,7 +34,7 @@ namespace ElevatorSolution
         public Elevator(SortedList<int, Floor> floors, string name)
         {
 
-            _name = name;
+            Name = name;
             _stateMachine = new StateMachine<ElevatorState, ElevatorTrigger>(ElevatorState.Stopped, FiringMode.Immediate);
 
             _stateMachine.Configure(ElevatorState.Stopped)
@@ -96,7 +96,7 @@ namespace ElevatorSolution
             ElevatorState source = transition.Source;
             ElevatorState dest = transition.Destination;
 
-            Debug.WriteLine($"Elevator:{_name}, Floor:{_currentFloor}, Trigger: {trigger}, {source}-->{dest}");
+            Debug.WriteLine($"Elevator:{Name}, Floor:{_currentFloor}, Trigger: {trigger}, {source}-->{dest}");
         }
 
         private void ProcessRequests()

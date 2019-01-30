@@ -12,7 +12,7 @@ namespace ElevatorSolution.Tests
 
 
         /// <summary>
-        /// Scenario: Elevator in requested floor and move up one floor
+        /// Scenario: Elevator is in requested floor and move up one floor
         /// Elevators - 1
         /// Floors - 1
         /// E1 in first floor
@@ -23,7 +23,7 @@ namespace ElevatorSolution.Tests
         public void GivenOneFloorAndOneElevator_WhenElevatorIsInGroundFloorAndUpFollowedByFirstFloorIsPressedFromGroundFloor_ThenElevatorIsMovedToFirstFloor()
         {
             //Arrange
-            Building building = new Building(minFloor: 0, maxfloor: 1, numberOfElevators: 1);            
+            Building building = new Building(minFloor: 0, maxfloor: 1, numberOfElevators: 1);
 
             //Act
             Elevator elevatorServedRequest = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
@@ -37,7 +37,7 @@ namespace ElevatorSolution.Tests
 
 
         /// <summary>
-        /// Scenario: Elevator in requested floor and move up two floor
+        /// Scenario: Elevator is in requested floor and move up two floor
         /// Elevators - 1
         /// Floors - 2
         /// E1 in first floor
@@ -47,7 +47,7 @@ namespace ElevatorSolution.Tests
         public void GivenTwoFloorAndOneElevator_WhenElevatorIsInGroundFloorAndUpFollowedBySecondFloorIsPressedFromGroundFloor_ThenElevatorIsMovedToSecondFloor()
         {
             //Arrange
-            Building building = new Building(minFloor: 0, maxfloor: 2, numberOfElevators: 1);            
+            Building building = new Building(minFloor: 0, maxfloor: 2, numberOfElevators: 1);
 
             Elevator elevatorServedRequest = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 2);
             var actions = elevatorServedRequest.GetActions();
@@ -68,11 +68,11 @@ namespace ElevatorSolution.Tests
         /// Expected : E1 :First floor -> Ground Floor 
         [Fact]
         public void GivenOneFloorAndOneElevator_WhenElevatorIsInFirstFloorAndUpFollowedByFirstFloorIsPressedFromGroundFloor_ThenElevatorIsMovedFromFirstToGroundAndThenToFirstFloor()
-        {    
+        {
             //Arrange
             Building building = new Building(minFloor: 0, maxfloor: 1, numberOfElevators: 1);
             //Move elevator to First floor
-           Elevator elevatorReachedFirstFloor= building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
+            Elevator elevatorReachedFirstFloor = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
 
             //Act
             Elevator elevatorServedRequest = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
@@ -87,7 +87,7 @@ namespace ElevatorSolution.Tests
         }
 
         /// <summary>
-        /// Scenario: Elevator in requested floor and move down one floor
+        /// Scenario: Elevator is in requested floor and move down one floor
         /// Elevators - 1
         /// Floors - 1
         /// E1 in first floor
@@ -100,6 +100,8 @@ namespace ElevatorSolution.Tests
             AutoResetEvent elevatorActionCompletedSignal = new AutoResetEvent(false);
             Building building = new Building(minFloor: 0, maxfloor: 1, numberOfElevators: 1);
             building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
+
+            //Act
             Elevator elevatorReachedFirstFloor = building.AddRequest(floorNumber: 1, requestDirection: FloorRequestDirection.Down, destinationFloor: 0);
 
             var actions = elevatorReachedFirstFloor.GetActions().ToArray();
@@ -107,7 +109,7 @@ namespace ElevatorSolution.Tests
             //Assert
             Assert.True(actions.Count() == 2);
             Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
-            Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[1]);          
+            Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[1]);
         }
 
         #endregion
@@ -133,59 +135,21 @@ namespace ElevatorSolution.Tests
             //Arrange 
             Building building = new Building(minFloor: 0, maxfloor: 2, numberOfElevators: 2);
 
-            Elevator elevatorInFirstFloor;
             //Moving E1 to first floor
-            building.AddFloorRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP,
-                elevatorArrivedAtRequestFloor: (elevatorAssigned) =>
-                {
-                    elevatorInFirstFloor = elevatorAssigned;
-                    elevatorAssigned.AddRequest(destinationFloor: 1,
-                        servedRequestCallback: (elevatorServedRequest) =>
-                        {
-                            elevatorServedRequest.CloosDoors();
-                            e1MovedSignal.Set();
-                        });
+            Elevator elevatorOne = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
 
-                    elevatorAssigned.CloosDoors();
-                });
+            //Moving E2 to first floor
+            Elevator elevatorTwo = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
 
-            Elevator elevatorInSecondFloor;
-            //Moving E2 to Second floor 
-            building.AddFloorRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP,
-                elevatorArrivedAtRequestFloor: (elevatorAssigned) =>
-                {
-                    elevatorInSecondFloor = elevatorAssigned;
+            Elevator elevatorServedRequest = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
 
-                    elevatorAssigned.AddRequest(destinationFloor: 2,
-                        servedRequestCallback: (elevatorServedRequest) =>
-                        {
-                            elevatorServedRequest.CloosDoors();
-                            e2MovedSignal.Set();
-                        });
-                    elevatorAssigned.CloosDoors();
-                });
-
-            e1MovedSignal.WaitOne();
-            e2MovedSignal.WaitOne();
-
-            building.AddFloorRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, elevatorArrivedAtRequestFloor: (elevatorAssigned) =>
-            {
-                elevatorAssigned.AddRequest(destinationFloor: 1,
-                       servedRequestCallback: (elevatorServedRequest) =>
-                       {
-                           elevatorServedRequest.CloosDoors();
-
-                           var actions = elevatorServedRequest.GetActions();
-                           Assert.True(actions.Count() == 2);
-                           Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
-                           Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[1]);
-
-                       });
-                elevatorAssigned.CloosDoors();
-            });
-
+            Assert.Equal(elevatorOne.Name, elevatorServedRequest.Name);
+            var actions = elevatorServedRequest.GetActions();
+            Assert.True(actions.Count() == 2);
+            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
+            Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[1]);
         }
 
-        #endregion 
+        #endregion
     }
 }

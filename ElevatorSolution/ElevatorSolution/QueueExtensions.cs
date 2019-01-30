@@ -10,12 +10,9 @@ namespace ElevatorSolution
     {
         public static void Remove<T>(this Queue<T> queue, T itemToRemove) where T : class
         {
-           
-                var list = queue.Where(item => item != itemToRemove).ToList();
-                queue.Clear();
-                list.ForEach(item => queue.Enqueue(item));
-       
-
+            var list = queue.Where(item => item != itemToRemove).ToList();
+            queue.Clear();
+            list.ForEach(item => queue.Enqueue(item));
         }
     }
 }
