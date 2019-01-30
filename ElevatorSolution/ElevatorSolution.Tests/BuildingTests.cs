@@ -12,6 +12,7 @@ namespace ElevatorSolution.Tests
 
 
         /// <summary>
+        /// Scenario: Elevator in requested floor and move up one floor
         /// Elevators - 1
         /// Floors - 1
         /// E1 in first floor
@@ -36,6 +37,7 @@ namespace ElevatorSolution.Tests
 
 
         /// <summary>
+        /// Scenario: Elevator in requested floor and move up two floor
         /// Elevators - 1
         /// Floors - 2
         /// E1 in first floor
@@ -58,6 +60,7 @@ namespace ElevatorSolution.Tests
         }
 
         /// <summary>
+        /// Scenario: Elevator not in requested floor and move up one floor
         /// Elevators - 1
         /// Floors - 1
         /// E1 in Second floor
@@ -65,52 +68,7 @@ namespace ElevatorSolution.Tests
         /// Expected : E1 :First floor -> Ground Floor 
         [Fact]
         public void GivenOneFloorAndOneElevator_WhenElevatorIsInFirstFloorAndUpFollowedByFirstFloorIsPressedFromGroundFloor_ThenElevatorIsMovedFromFirstToGroundAndThenToFirstFloor()
-        {
-        //    //Arrange : Elevator in second floor
-        //    Building building = new Building(minFloor: 0, maxfloor: 1, numberOfElevators: 1);
-        //    AutoResetEvent elevatorActionCompletedSignal = new AutoResetEvent(false);
-        //    building.AddFloorRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP,
-        //        floorRequestAssignedElevator: (elevatorAssigned) =>
-        //    {
-        //        elevatorAssigned.AddRequest(destinationFloor: 1,
-        //            servedRequestCallback: (elevatorArrivedAtGrounfFloor) =>
-        //        {
-        //            Thread.Sleep(100);
-        //            elevatorArrivedAtGrounfFloor.CloosDoors();
-        //            elevatorActionCompletedSignal.Set();
-        //        });
-
-        //        Thread.Sleep(100);
-        //        elevatorAssigned.CloosDoors();
-        //    });
-        //    //Waiting for elevator to move to first floor
-        //    elevatorActionCompletedSignal.WaitOne();
-
-
-        //    //Act :  Request to second floor from first floor
-        //    building.AddFloorRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, floorRequestAssignedElevator: (elevatorArrivedAtGrounfFloor) =>
-        //       {
-        //           elevatorArrivedAtGrounfFloor.AddRequest(destinationFloor: 0,
-        //          servedRequestCallback: (elevatorServedRequest) =>
-        //          {
-        //              var actions = elevatorServedRequest.GetActions().ToArray();
-
-        //              //Assert
-        //              Assert.True(actions.Count() == 2);
-        //              Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
-        //              Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[1]);
-
-        //              elevatorActionCompletedSignal.Set();
-        //          });
-
-        //           Thread.Sleep(100);
-        //           elevatorArrivedAtGrounfFloor.CloosDoors();
-        //       });
-
-        //    //Wait for completing request to second floor
-        //    elevatorActionCompletedSignal.WaitOne();
-
-
+        {    
             //Arrange
             Building building = new Building(minFloor: 0, maxfloor: 1, numberOfElevators: 1);
             //Move elevator to First floor
@@ -122,12 +80,19 @@ namespace ElevatorSolution.Tests
             var actions = elevatorServedRequest.GetActions().ToArray();
 
             //Assert
-            Assert.True(actions.Count() == 2);
+            Assert.True(actions.Count() == 3);
             Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
             Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[1]);
+            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[1]);
         }
 
-
+        /// <summary>
+        /// Scenario: Elevator in requested floor and move down one floor
+        /// Elevators - 1
+        /// Floors - 1
+        /// E1 in first floor
+        /// Request : Ground floor -> First Floor 
+        /// Expected : E1 :Ground floor -> First Floor 
         [Fact]
         public void GivenOneFloorAndOneElevator_WhenElevatorIsInFirstFloorAndDownRequestFollowedByGroundFloorRequestFromFirstFloor_ThenElevatorIsMovedFromFirstToGround()
         {

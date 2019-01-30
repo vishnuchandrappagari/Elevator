@@ -128,6 +128,10 @@ namespace ElevatorSolution
                         _stateMachine.Fire(ElevatorTrigger.GoDown);
                         MoveToNextFloor();
                     }
+                    else if (_requestQueue.Any(request => request.DestinationFloor == _currentFloor))
+                    {
+                        _stateMachine.Fire(ElevatorTrigger.OpenDoors);
+                    }
                     else
                     {
                         //Determine the direction based on request 
@@ -147,7 +151,6 @@ namespace ElevatorSolution
                     if (_requestQueue.Any(request => request.DestinationFloor == _currentFloor))
                     {
                         _stateMachine.Fire(ElevatorTrigger.Stop);
-                        _stateMachine.Fire(ElevatorTrigger.OpenDoors);
                     }
                     else
                     {
@@ -167,7 +170,7 @@ namespace ElevatorSolution
 
         public void CloosDoors()
         {
-            Thread.Sleep(100);
+            Thread.Sleep(200);
             _stateMachine.Fire(ElevatorTrigger.CloseDoors);
             _doorCloseSignaling.Set();
         }
