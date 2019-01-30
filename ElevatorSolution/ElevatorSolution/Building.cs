@@ -13,6 +13,7 @@ namespace ElevatorSolution
     {
         private SortedList<int, Floor> _floors;
         private List<Elevator> _elevators;
+        private int _minFloor,_maxFloor;
 
         public Building(int minFloor, int maxfloor, int numberOfElevators)
         {
@@ -26,10 +27,12 @@ namespace ElevatorSolution
             for (int i = 1; i <= numberOfElevators; i++)
                 _elevators.Add(new Elevator(_floors, $"Elevator {i}"));
 
+            _minFloor = minFloor;
+            _maxFloor = maxfloor;
 
         }
 
-        //TODO: This is blocking request currently this can be async
+        //TODO: This is blocking request currently this can be changed async
         public Elevator AddRequest(int floorNumber, FloorRequestDirection requestDirection, int destinationFloor)
         {
             return AddRequest(floorNumber, requestDirection, destinationFloor, elvatorArrivedAtFloorCallback:(elevator) => elevator.CloosDoors(), servedRequestCallback:(elevator) => elevator.CloosDoors());
@@ -72,7 +75,7 @@ namespace ElevatorSolution
             else
                 _floors[floorNumber].SetMovingDownRequest(elevatorArrivedAtRequestFloor);
 
-            Elevator elevatorInRequestFloor = _elevators.FirstOrDefault();
+            Elevator elevatorInRequestFloor = ElevatorPicker.GetSutableElevator(_minFloor, _maxFloor, floorNumber, requestDirection, _elevators);
 
             elevatorInRequestFloor.AddRequest(floorNumber, elevatorArrivedAtRequestFloor);
         }

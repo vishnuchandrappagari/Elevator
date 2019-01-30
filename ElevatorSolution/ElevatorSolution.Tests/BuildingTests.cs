@@ -25,11 +25,13 @@ namespace ElevatorSolution.Tests
             //Arrange
             Building building = new Building(minFloor: 0, maxfloor: 1, numberOfElevators: 1);
 
+
             //Act
             Elevator elevatorServedRequest = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
 
-            var actions = elevatorServedRequest.GetActions();
+
             //Assert
+            var actions = elevatorServedRequest.GetActions();
             Assert.True(actions.Count() == 1);
             Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
         }
@@ -49,8 +51,11 @@ namespace ElevatorSolution.Tests
             //Arrange
             Building building = new Building(minFloor: 0, maxfloor: 2, numberOfElevators: 1);
 
+
+            //Act
             Elevator elevatorServedRequest = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 2);
             var actions = elevatorServedRequest.GetActions();
+
 
             //Assert
             Assert.True(actions.Count() == 2);
@@ -77,7 +82,7 @@ namespace ElevatorSolution.Tests
             //Act
             Elevator elevatorServedRequest = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
 
-            var actions = elevatorServedRequest.GetActions().ToArray();
+            var actions = elevatorServedRequest.GetActions();
 
             //Assert
             Assert.True(actions.Count() == 3);
@@ -101,12 +106,13 @@ namespace ElevatorSolution.Tests
             Building building = new Building(minFloor: 0, maxfloor: 1, numberOfElevators: 1);
             building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
 
+
             //Act
             Elevator elevatorReachedFirstFloor = building.AddRequest(floorNumber: 1, requestDirection: FloorRequestDirection.Down, destinationFloor: 0);
 
-            var actions = elevatorReachedFirstFloor.GetActions().ToArray();
 
             //Assert
+            var actions = elevatorReachedFirstFloor.GetActions();
             Assert.True(actions.Count() == 2);
             Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
             Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[1]);
@@ -118,7 +124,7 @@ namespace ElevatorSolution.Tests
 
 
         /// <summary>
-        ///  Scenario: Nearest elevator serves the request 
+        /// Scenario: Nearest elevator serves the request 
         /// Elevators - 2
         /// Floors - 2
         /// E1 in first floor, E2 in second floor
@@ -128,26 +134,25 @@ namespace ElevatorSolution.Tests
         [Fact]
         public void GivenTwoElevatorsTwoFloors_WhenOneElevatorIsInFirstFloorAndOtherOneInSecondFloorSecondFloorFirstFloorIsRequestedFromGround_ThenElevatorIsFirstFloorServes()
         {
-
-            AutoResetEvent e1MovedSignal = new AutoResetEvent(false);
-            AutoResetEvent e2MovedSignal = new AutoResetEvent(false);
-
             //Arrange 
             Building building = new Building(minFloor: 0, maxfloor: 2, numberOfElevators: 2);
-
             //Moving E1 to first floor
             Elevator elevatorOne = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
+            //Moving E2 to second floor
+            Elevator elevatorTwo = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 2);
 
-            //Moving E2 to first floor
-            Elevator elevatorTwo = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
 
+            //Act
             Elevator elevatorServedRequest = building.AddRequest(floorNumber: 0, requestDirection: FloorRequestDirection.UP, destinationFloor: 1);
 
+
+            //Assert
             Assert.Equal(elevatorOne.Name, elevatorServedRequest.Name);
             var actions = elevatorServedRequest.GetActions();
-            Assert.True(actions.Count() == 2);
+            Assert.True(actions.Count() == 3);
             Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
             Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[1]);
+            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[2]);
         }
 
         #endregion

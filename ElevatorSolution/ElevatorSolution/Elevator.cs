@@ -20,10 +20,10 @@ namespace ElevatorSolution
         private Queue<ElevatorRequest> _requestQueue = new Queue<ElevatorRequest>();
         private IList<ElevatorAction> actions = new List<ElevatorAction>();
         private SortedList<int, Floor> _floors;
-        private int _currentFloor;
-        public string Name{ get; set; };
+        public virtual int CurrentFloor { get; private set; }
+        public virtual string Name { get; private set; }
 
-        public ElevatorState State
+        public virtual ElevatorState State
         {
             get
             {
@@ -43,7 +43,7 @@ namespace ElevatorSolution
                 {
                     lock (_requestQueue)
                     {
-                        ElevatorRequest currentFloorDestinationRequest = _requestQueue.FirstOrDefault(request => request.DestinationFloor == _floors[_currentFloor].FloorNumber);
+                        ElevatorRequest currentFloorDestinationRequest = _requestQueue.FirstOrDefault(request => request.DestinationFloor == _floors[CurrentFloor].FloorNumber);
 
                         if (currentFloorDestinationRequest != null)
                         {
@@ -81,7 +81,7 @@ namespace ElevatorSolution
 
 
             //Placing new elevator on lowest floor
-            _currentFloor = floors.First().Key;
+            CurrentFloor = floors.First().Key;
 
             _floors = floors;
 
@@ -96,7 +96,7 @@ namespace ElevatorSolution
             ElevatorState source = transition.Source;
             ElevatorState dest = transition.Destination;
 
-            Debug.WriteLine($"Elevator:{Name}, Floor:{_currentFloor}, Trigger: {trigger}, {source}-->{dest}");
+            Debug.WriteLine($"Elevator:{Name}, Floor:{CurrentFloor}, Trigger: {trigger}, {source}-->{dest}");
         }
 
         private void ProcessRequests()
@@ -114,7 +114,7 @@ namespace ElevatorSolution
                 if (_stateMachine.State == ElevatorState.Stopped)
                 {
 
-                    Floor currentFloor = _floors[_currentFloor];
+                    Floor currentFloor = _floors[CurrentFloor];
                     if (currentFloor.HasUpRequest || currentFloor.HasDownRequest)
                     {
                         lock (currentFloor)
@@ -136,7 +136,7 @@ namespace ElevatorSolution
                             MoveToNextFloor();
                         }
                     }
-                    else if (_requestQueue.Any(request => request.DestinationFloor == _currentFloor))
+                    else if (_requestQueue.Any(request => request.DestinationFloor == CurrentFloor))
                     {
                         _stateMachine.Fire(ElevatorTrigger.OpenDoors);
                     }
@@ -144,11 +144,11 @@ namespace ElevatorSolution
                     {
                         //Determine the direction based on request 
                         ElevatorRequest elevatorRequest = _requestQueue.Peek();
-                        if (elevatorRequest.DestinationFloor > _currentFloor)
+                        if (elevatorRequest.DestinationFloor > CurrentFloor)
                         {
                             _stateMachine.Fire(ElevatorTrigger.GoUp);
                         }
-                        else if (elevatorRequest.DestinationFloor < _currentFloor)
+                        else if (elevatorRequest.DestinationFloor < CurrentFloor)
                         {
                             _stateMachine.Fire(ElevatorTrigger.GoDown);
                         }
@@ -156,7 +156,7 @@ namespace ElevatorSolution
                 }
                 else if (_stateMachine.State == ElevatorState.GoingUp || _stateMachine.State == ElevatorState.GoingDown)
                 {
-                    if (_requestQueue.Any(request => request.DestinationFloor == _currentFloor))
+                    if (_requestQueue.Any(request => request.DestinationFloor == CurrentFloor))
                     {
                         _stateMachine.Fire(ElevatorTrigger.Stop);
                     }
@@ -173,26 +173,26 @@ namespace ElevatorSolution
 
             if (ElevatorState.GoingUp == State)
             {
-                if (_floors.IndexOfKey(_currentFloor + 1) == -1)
+                if (_floors.IndexOfKey(CurrentFloor + 1) == -1)
                 {
                     _stateMachine.Fire(ElevatorTrigger.ReverseDirection);
                 }
                 else
                 {
-                    AddAction(_currentFloor, _currentFloor + 1);
-                    _currentFloor++;
+                    AddAction(CurrentFloor, CurrentFloor + 1);
+                    CurrentFloor++;
                 }
             }
             else if (ElevatorState.GoingDown == State)
             {
-                if (_floors.IndexOfKey(_currentFloor - 1) == -1)
+                if (_floors.IndexOfKey(CurrentFloor - 1) == -1)
                 {
                     _stateMachine.Fire(ElevatorTrigger.ReverseDirection);
                 }
                 else
                 {
-                    AddAction(_currentFloor, _currentFloor - 1);
-                    _currentFloor--;
+                    AddAction(CurrentFloor, CurrentFloor - 1);
+                    CurrentFloor--;
                 }
             }
         }
