@@ -29,6 +29,7 @@ namespace ElevatorSolution
 
         }
 
+        //TODO: This is blocking request currently this can be async
         public Elevator AddRequest(int floorNumber, FloorRequestDirection requestDirection, int destinationFloor)
         {
             return AddRequest(floorNumber, requestDirection, destinationFloor, elvatorArrivedAtFloorCallback:(elevator) => elevator.CloosDoors(), servedRequestCallback:(elevator) => elevator.CloosDoors());
