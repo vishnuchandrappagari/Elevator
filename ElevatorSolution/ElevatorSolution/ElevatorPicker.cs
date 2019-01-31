@@ -11,7 +11,7 @@ namespace ElevatorSolution
     /// </summary>
     public class ElevatorPicker
     {
-        public static Elevator GetSutableElevator(int minFloor, int maxfloor, int floorNumber, FloorRequestDirection requestDirection, List<Elevator> elevatorsList)
+        public  Elevator GetSutableElevator(int minFloor, int maxfloor, int floorNumber, FloorRequestDirection requestDirection, List<Elevator> elevatorsList)
         {
             Elevator elevatorSelected = null;
             int counter = 0;

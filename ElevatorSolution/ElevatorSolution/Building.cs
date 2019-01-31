@@ -14,6 +14,7 @@ namespace ElevatorSolution
         private SortedList<int, Floor> _floors;
         private List<Elevator> _elevators;
         private int _minFloor,_maxFloor;
+        private ElevatorPicker _elevatorPicker;
 
         public Building(int minFloor, int maxfloor, int numberOfElevators)
         {
@@ -29,6 +30,8 @@ namespace ElevatorSolution
 
             _minFloor = minFloor;
             _maxFloor = maxfloor;
+
+            _elevatorPicker = new ElevatorPicker();//TODO:Can used DI
 
         }
 
@@ -75,7 +78,7 @@ namespace ElevatorSolution
             else
                 _floors[floorNumber].SetMovingDownRequest(elevatorArrivedAtRequestFloor);
 
-            Elevator elevatorInRequestFloor = ElevatorPicker.GetSutableElevator(_minFloor, _maxFloor, floorNumber, requestDirection, _elevators);
+            Elevator elevatorInRequestFloor = _elevatorPicker.GetSutableElevator(_minFloor, _maxFloor, floorNumber, requestDirection, _elevators);
 
             elevatorInRequestFloor.AddRequest(floorNumber, elevatorArrivedAtRequestFloor);
         }

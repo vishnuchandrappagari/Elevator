@@ -21,6 +21,7 @@ namespace ElevatorSolution.Tests
         {
             //Arrange
             var floors = new SortedList<int, Floor>() { { 1, new Floor(1) } };
+            ElevatorPicker elevatorPicker = new ElevatorPicker();
 
             var elevatorOne = new Mock<Elevator>(floors, "Elevator 1");
             elevatorOne.Setup(elevator => elevator.Name).Returns(() => "Elevator 1");
@@ -37,7 +38,7 @@ namespace ElevatorSolution.Tests
             elevators.Add(elevatorTwo.Object);
 
             //Act
-            Elevator elevatorReturned = ElevatorPicker.GetSutableElevator(minFloor: 0, maxfloor: 3, floorNumber: floor, requestDirection: FloorRequestDirection.UP, elevatorsList: elevators);
+            Elevator elevatorReturned = elevatorPicker.GetSutableElevator(minFloor: 0, maxfloor: 3, floorNumber: floor, requestDirection: FloorRequestDirection.UP, elevatorsList: elevators);
 
 
             //Assert
@@ -55,6 +56,7 @@ namespace ElevatorSolution.Tests
         {
             //Arrange
             var floors = new SortedList<int, Floor>() { { 1, new Floor(1) } };
+            ElevatorPicker elevatorPicker = new ElevatorPicker();
 
             var elevatorOne = new Mock<Elevator>(floors, "");
             elevatorOne.Setup(elevator => elevator.Name).Returns(() => "Elevator 1");
@@ -78,7 +80,7 @@ namespace ElevatorSolution.Tests
 
 
             //Act
-            Elevator elevatorReturned = ElevatorPicker.GetSutableElevator(minFloor: -2, maxfloor: 10, floorNumber: floor, requestDirection: floorRequestDirection, elevatorsList: elevators);
+            Elevator elevatorReturned = elevatorPicker.GetSutableElevator(minFloor: -2, maxfloor: 10, floorNumber: floor, requestDirection: floorRequestDirection, elevatorsList: elevators);
 
 
             //Assert
