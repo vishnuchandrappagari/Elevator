@@ -7,15 +7,13 @@ using static ElevatorSolution.Floor;
 
 namespace ElevatorSolution
 {
-
     public delegate void ElevatorCallback(Elevator elevator);
+
     public class Building
     {
         private SortedList<int, Floor> _floors;
         private List<Elevator> _elevators;
         private int _minFloor,_maxFloor;
-
-        private ElevatorCallback _closeDoors => (elevator) => elevator.CloosDoors();
 
         public Building(int minFloor, int maxfloor, int numberOfElevators)
         {
@@ -81,11 +79,6 @@ namespace ElevatorSolution
 
             elevatorInRequestFloor.AddRequest(floorNumber, elevatorArrivedAtRequestFloor);
         }
-
-
-        private Elevator PickSutableElevator(int floorNumber, FloorRequestDirection floorRequest, SortedList<int, Elevator> elevatorsList)
-        {
-            return null;
-        }
+     
     }
 }

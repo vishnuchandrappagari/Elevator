@@ -33,10 +33,10 @@ namespace ElevatorSolution.Tests
 
                 //Assert
                 var actions = elevator.GetActions();
-                Assert.Equal(2,actions.Length);
+                Assert.Equal(2, actions.Length);
                 Assert.Equal(new ElevatorAction(0, 1), actions[0]);
                 Assert.Equal(new ElevatorAction(1), actions[1]);
-                
+
                 signalRequestCompletion.Set();
             });
 
@@ -139,8 +139,9 @@ namespace ElevatorSolution.Tests
             Assert.Equal(new ElevatorAction(0, 1), actions[0]);
             Assert.Equal(new ElevatorAction(1), actions[1]);
             Assert.Equal(new ElevatorAction(1, 2), actions[2]);
-            Assert.Equal(new ElevatorAction(2), actions[3]);            
+            Assert.Equal(new ElevatorAction(2), actions[3]);
 
+            Assert.False(floors[1].HasDownRequest);
         }
 
 
@@ -168,7 +169,7 @@ namespace ElevatorSolution.Tests
             //Assert
             var actions = elevator.GetActions();
             Assert.Equal(3, actions.Length);
-            Assert.Equal(new ElevatorAction(0, 1), actions[0]);            
+            Assert.Equal(new ElevatorAction(0, 1), actions[0]);
             Assert.Equal(new ElevatorAction(1, 2), actions[1]);
             Assert.Equal(new ElevatorAction(2), actions[2]);
         }
@@ -205,10 +206,12 @@ namespace ElevatorSolution.Tests
             Assert.Equal(new ElevatorAction(0, 1), actions[0]);
             Assert.Equal(new ElevatorAction(1, 2), actions[1]);
             Assert.Equal(new ElevatorAction(doorsOpenedFloor: 2), actions[2]);
-            Assert.Equal(new ElevatorAction(2,1), actions[3]);
+            Assert.Equal(new ElevatorAction(2, 1), actions[3]);
             Assert.Equal(new ElevatorAction(1), actions[4]);
-            Assert.Equal(new ElevatorAction(1,0), actions[5]);
+            Assert.Equal(new ElevatorAction(1, 0), actions[5]);
             Assert.Equal(new ElevatorAction(0), actions[6]);
+
+            Assert.False(floors[1].HasDownRequest);
         }
 
 
@@ -219,7 +222,8 @@ namespace ElevatorSolution.Tests
 
             SortedList<int, Floor> floors = GetFloors();
             Elevator elevator = new Elevator(floors, "Elevator 1");
-            elevator.AddRequest(0, (elevatorServedRequest) => {                
+            elevator.AddRequest(0, (elevatorServedRequest) =>
+            {
                 elevatorServedRequest.CloosDoors();
                 signalRequestCompletion.Set();
             });
@@ -231,6 +235,6 @@ namespace ElevatorSolution.Tests
             Assert.Single(actions);
             Assert.Equal(new ElevatorAction(0), actions[0]);
         }
-     
+
     }
 }

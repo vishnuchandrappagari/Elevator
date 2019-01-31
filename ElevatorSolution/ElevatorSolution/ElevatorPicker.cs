@@ -5,6 +5,10 @@ using System.Text;
 
 namespace ElevatorSolution
 {
+
+    /// <summary>
+    /// Picker the suitable elevator for floor request
+    /// </summary>
     public class ElevatorPicker
     {
         public static Elevator GetSutableElevator(int minFloor, int maxfloor, int floorNumber, FloorRequestDirection requestDirection, List<Elevator> elevatorsList)

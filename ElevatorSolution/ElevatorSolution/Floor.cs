@@ -8,8 +8,8 @@ namespace ElevatorSolution
     public class Floor
     {
 
-        public ElevatorCallback UpRequestNotification;
-        public ElevatorCallback DownRequestNotification;
+        public ElevatorCallback UpRequestNotification { get; private set; }
+        public ElevatorCallback DownRequestNotification { get; private set; }
 
         public bool HasUpRequest { get; private set; }
 

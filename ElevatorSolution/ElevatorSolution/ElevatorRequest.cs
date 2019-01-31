@@ -4,6 +4,9 @@ using System.Text;
 
 namespace ElevatorSolution
 {
+    /// <summary>
+    /// Once person gets in to elevator this is used for specifying destination floor 
+    /// </summary>
     public class ElevatorRequest
     {
         public int DestinationFloor { get; private set; }
