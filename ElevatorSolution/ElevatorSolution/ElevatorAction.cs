@@ -12,6 +12,11 @@ namespace ElevatorSolution
             _description = $"Moved from {fromFloor} to {toFloor}";
         }
 
+        public ElevatorAction(int doorsOpenedFloor)
+        {
+            _description = $"DoorsOpened in floor {doorsOpenedFloor}";
+        }
+
         public override string ToString()
         {
             return _description;

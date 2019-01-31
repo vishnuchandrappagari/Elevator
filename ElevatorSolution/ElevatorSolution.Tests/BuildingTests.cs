@@ -32,8 +32,10 @@ namespace ElevatorSolution.Tests
 
             //Assert
             var actions = elevatorServedRequest.GetActions();
-            Assert.True(actions.Count() == 1);
-            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
+            Assert.True(actions.Length == 3);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 0), actions[0]);
+            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[1]);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 1), actions[2]);
         }
 
 
@@ -58,9 +60,11 @@ namespace ElevatorSolution.Tests
 
 
             //Assert
-            Assert.True(actions.Count() == 2);
-            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
-            Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 2), actions[1]);
+            Assert.True(actions.Count() == 4);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 0), actions[0]);
+            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[1]);
+            Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 2), actions[2]);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 2), actions[3]);
 
         }
 
@@ -85,10 +89,14 @@ namespace ElevatorSolution.Tests
             var actions = elevatorServedRequest.GetActions();
 
             //Assert
-            Assert.True(actions.Count() == 3);
-            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
-            Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[1]);
-            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[2]);
+            Assert.True(actions.Count() == 7);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 0), actions[0]);
+            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[1]);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 1), actions[2]);
+            Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[3]);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 0), actions[4]);
+            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[5]);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 1), actions[6]);
         }
 
         /// <summary>
@@ -113,9 +121,13 @@ namespace ElevatorSolution.Tests
 
             //Assert
             var actions = elevatorReachedFirstFloor.GetActions();
-            Assert.True(actions.Count() == 2);
-            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
-            Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[1]);
+            Assert.True(actions.Count() == 6);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 0), actions[0]);
+            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[1]);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 1), actions[2]);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 1), actions[3]);
+            Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[4]);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 0), actions[5]);
         }
 
         #endregion
@@ -149,10 +161,15 @@ namespace ElevatorSolution.Tests
             //Assert
             Assert.Equal(elevatorOne.Name, elevatorServedRequest.Name);
             var actions = elevatorServedRequest.GetActions();
-            Assert.True(actions.Count() == 3);
-            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[0]);
-            Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[1]);
-            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[2]);
+            Assert.True(actions.Length == 7);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 0), actions[0]);
+            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[1]);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 1), actions[2]);
+            Assert.Equal(new ElevatorAction(fromFloor: 1, toFloor: 0), actions[3]);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 0), actions[4]);
+            Assert.Equal(new ElevatorAction(fromFloor: 0, toFloor: 1), actions[5]);
+            Assert.Equal(new ElevatorAction(doorsOpenedFloor: 1), actions[6]);
+
         }
 
         #endregion

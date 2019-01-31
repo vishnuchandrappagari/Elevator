@@ -15,6 +15,8 @@ namespace ElevatorSolution
         private List<Elevator> _elevators;
         private int _minFloor,_maxFloor;
 
+        private ElevatorCallback _closeDoors => (elevator) => elevator.CloosDoors();
+
         public Building(int minFloor, int maxfloor, int numberOfElevators)
         {
             _elevators = new List<Elevator>();
@@ -35,7 +37,7 @@ namespace ElevatorSolution
         //TODO: This is blocking request currently this can be changed async
         public Elevator AddRequest(int floorNumber, FloorRequestDirection requestDirection, int destinationFloor)
         {
-            return AddRequest(floorNumber, requestDirection, destinationFloor, elvatorArrivedAtFloorCallback:(elevator) => elevator.CloosDoors(), servedRequestCallback:(elevator) => elevator.CloosDoors());
+            return AddRequest(floorNumber, requestDirection, destinationFloor, elvatorArrivedAtFloorCallback: Elevator.CloseDoorsAction, servedRequestCallback: Elevator.CloseDoorsAction);
         }
 
 

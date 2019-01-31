@@ -8,8 +8,8 @@ namespace ElevatorSolution
     public class Floor
     {
 
-        public ElevatorCallback _upRequestNotification;
-        public ElevatorCallback _downRequestNotification;
+        public ElevatorCallback UpRequestNotification;
+        public ElevatorCallback DownRequestNotification;
 
         public bool HasUpRequest { get; private set; }
 
@@ -22,30 +22,30 @@ namespace ElevatorSolution
         {
             FloorNumber = floorNumber;
         }
-      
 
-        public void SetMovingUpRequest(ElevatorCallback callback)
+
+        public void SetMovingUpRequest(ElevatorCallback callback = null)
         {
             HasUpRequest = true;
-            _upRequestNotification += callback;
+            UpRequestNotification += callback;
         }
 
         public void ResetMovingUpRequest()
         {
             HasUpRequest = false;
-            _upRequestNotification = null;
+            UpRequestNotification = null;
         }
 
-        public void SetMovingDownRequest(ElevatorCallback callback)
+        public void SetMovingDownRequest(ElevatorCallback callback = null)
         {
             HasDownRequest = true;
-            _downRequestNotification += callback;
+            DownRequestNotification += callback;
         }
 
         public void ResetMovingDownRequest()
         {
             HasDownRequest = false;
-            _downRequestNotification = null;
+            DownRequestNotification = null;
         }
     }
 }
