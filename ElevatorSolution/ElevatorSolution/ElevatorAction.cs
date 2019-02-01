@@ -4,6 +4,10 @@ using System.Text;
 
 namespace ElevatorSolution
 {
+
+    /// <summary>
+    /// For logging elevator Movement/Actions
+    /// </summary>
     public class ElevatorAction
     {
         private string _description;
