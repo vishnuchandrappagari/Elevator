@@ -54,6 +54,7 @@ namespace ElevatorSolution
 
             //Creating elevator dedicated thread
             Thread Thread = new Thread(new ThreadStart(ProcessRequests));
+            Thread.IsBackground = true; 
             Thread.Start();
         }
 
